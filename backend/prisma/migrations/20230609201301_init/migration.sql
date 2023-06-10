@@ -20,3 +20,5 @@ CREATE TABLE "Post" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+ALTER TABLE "User" ADD COLUMN "password" TEXT NOT NULL DEFAULT '';
