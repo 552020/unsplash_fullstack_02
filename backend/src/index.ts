@@ -1,6 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import cors from "cors";
 import express from "express";
+import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 const app = express();
@@ -97,9 +100,6 @@ app.post(`/user`, async (req, res) => {
   res.json(result);
 });
 
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-
 app.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 10);
@@ -141,4 +141,34 @@ app.post("/signin", async (req, res) => {
   res.json({ token });
 });
 
+declare global {
+  namespace Express {
+    interface Request {
+      userId?: number;
+    }
+  }
+}
+
+function verifyToken(req: Request, res: Response, next: NextFunction) {
+  const token = req.headers.authorization;
+
+  if (!token) {
+    return res.status(403).json({ error: "No token provided." });
+  }
+
+  jwt.verify(token, "your-secret-key", (err, decoded) => {
+    if (err) {
+      return res.status(500).json({ error: "Failed to authenticate token." });
+    }
+    // see note below about this type assertion
+    // TODO add a runtime check to ensure that decoded.id is indeed a number before assigning it to req.userId
+    const payload = decoded as { id: number };
+    req.userId = payload.id;
+    next();
+  });
+}
+
 const server = app.listen(3001, () => console.log("🚀 Server ready at: http://localhost:3001"));
+
+//
+// Type assertion is being used in this case to assert that the decoded object has a certain shape, specifically that it has an id property which is a number. This is because JWT decoding in JavaScript is a bit loose and does not provide strict typing. It's not 100% safe because we're basically telling TypeScript "trust me, I know what I'm doing". If the decoded token does not actually have an id property that is a number, it could lead to unexpected behavior. To mitigate this risk, you could add a runtime check to ensure that decoded.id is indeed a number before assigning it to req.userId.
