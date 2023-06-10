@@ -6,6 +6,14 @@ Next.js, Express, Prisma App starting from this template: https://github.com/pri
 
 ## Useful links
 
+- Where to deploy the nodejs/express backend. Some suggestions by Theo: https://www.youtube.com/watch?v=prjMJtXCR-g&ab_channel=Theo-t3%E2%80%A4gg
+
+|               |             Easy              |               Medium               |  Hard   |
+| :-----------: | :---------------------------: | :--------------------------------: | :-----: |
+| Docker Image  |          Railway.app          |         Render.com, Fly.io         |   AWS   |
+| Website Host  | Vercel, Netlify, Github Pages |       Render.com, Cloudflare       | AWS/GCP |
+| Database Host |            Railway            | Planetscale, Supabase, CockroachDB | AWS/GCP |
+
 - How and where to host a MySQL database online:
   https://www.prisma.io/dataguide/mysql/5-ways-to-host-mysql
 - JWT secret key generation https://stackoverflow.com/questions/31309759/what-is-secret-key-for-jwt-based-authentication-and-how-to-generate-it
