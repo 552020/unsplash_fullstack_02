@@ -6,7 +6,9 @@ Next.js, Express, Prisma App starting from this template: https://github.com/pri
 
 ## Useful links
 
-https://www.prisma.io/dataguide/mysql/5-ways-to-host-mysql
+- How and where to host a MySQL database online:
+  https://www.prisma.io/dataguide/mysql/5-ways-to-host-mysql
+- JWT secret key generation https://stackoverflow.com/questions/31309759/what-is-secret-key-for-jwt-based-authentication-and-how-to-generate-it
 
 ## Fullstack Example with Next.js (REST API)
 
