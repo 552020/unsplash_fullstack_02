@@ -2,9 +2,9 @@
 
 Next.js, Express, Prisma App starting from this template: https://github.com/prisma/prisma-examples/tree/latest/typescript/rest-nextjs-express
 
-- How to add Tailwind to a Nextjs project. Besides follwoing the instructions on the Tailwind website, create a global.css file at the root of your project and add `impoert '../styles/global.css` to the \_app.tsx file and create one it this doens't exits
 
-## Useful links
+
+## Useful links & stuff
 
 - Where to deploy the nodejs/express backend. Some suggestions by Theo: https://www.youtube.com/watch?v=prjMJtXCR-g&ab_channel=Theo-t3%E2%80%A4gg
 
@@ -17,6 +17,7 @@ Next.js, Express, Prisma App starting from this template: https://github.com/pri
 - How and where to host a MySQL database online:
   https://www.prisma.io/dataguide/mysql/5-ways-to-host-mysql
 - JWT secret key generation https://stackoverflow.com/questions/31309759/what-is-secret-key-for-jwt-based-authentication-and-how-to-generate-it
+- How to add Tailwind to a Nextjs project. Besides follwoing the instructions on the Tailwind website, create a global.css file at the root of your project and add `impoert '../styles/global.css` to the \_app.tsx file and create one it this doens't exits
 
 ## Fullstack Example with Next.js (REST API)
 
