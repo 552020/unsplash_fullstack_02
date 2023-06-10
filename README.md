@@ -1,4 +1,4 @@
-# FULLSTACK UNSPlASH 02
+# unsplash_fullstack_02
 
 Next.js, Express, Prisma App starting from this template: https://github.com/prisma/prisma-examples/tree/latest/typescript/rest-nextjs-express
 
