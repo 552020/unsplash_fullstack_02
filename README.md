@@ -1,4 +1,14 @@
-# Fullstack Example with Next.js (REST API)
+# FULLSTACK UNSPlASH 02
+
+Next.js, Express, Prisma App starting from this template: https://github.com/prisma/prisma-examples/tree/latest/typescript/rest-nextjs-express
+
+- How to add Tailwind to a Nextjs project. Besides follwoing the instructions on the Tailwind website, create a global.css file at the root of your project and add `impoert '../styles/global.css` to the \_app.tsx file and create one it this doens't exits
+
+## Useful links
+
+https://www.prisma.io/dataguide/mysql/5-ways-to-host-mysql
+
+## Fullstack Example with Next.js (REST API)
 
 This example shows how to implement a **fullstack app in TypeScript with [Next.js](https://nextjs.org/)** using [React](https://reactjs.org/) (frontend), [Express](https://expressjs.com/) and [Prisma Client](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client) (backend). The example uses an SQLite database file with some initial dummy data which you can find at [`./backend/prisma/dev.db`](./backend/prisma/dev.db).
 
@@ -136,7 +146,6 @@ You can also access the REST API of the API server directly. It is running [`loc
 
 - `/api/post/:id`: Delete a post by its `id`
 
-
 ## Evolving the app
 
 Evolving the application typically requires three steps:
@@ -164,8 +173,8 @@ model Post {
 }
 
 model User {
-  id      Int      @default(autoincrement()) @id 
-  name    String? 
+  id      Int      @default(autoincrement()) @id
+  name    String?
   email   String   @unique
   posts   Post[]
 + profile Profile?
@@ -233,17 +242,15 @@ const userWithUpdatedProfile = await prisma.user.update({
 });
 ```
 
-
 ### 3. Build new UI features in React
 
 Once you have added a new endpoint to the API (e.g. `/api/profile` with `/POST`, `/PUT` and `GET` operations), you can start building a new UI component in React. It could e.g. be called `profile.tsx` and would be located in the `pages` directory.
 
 In the application code, you can access the new endpoint via `fetch` operations and populate the UI with the data you receive from the API calls.
 
-
 ## Switch to another database (e.g. PostgreSQL, MySQL, SQL Server, MongoDB)
 
-If you want to try this example with another database than SQLite, you can adjust the the database connection in [`prisma/schema.prisma`](./prisma/schema.prisma) by reconfiguring the `datasource` block. 
+If you want to try this example with another database than SQLite, you can adjust the the database connection in [`prisma/schema.prisma`](./prisma/schema.prisma) by reconfiguring the `datasource` block.
 
 Learn more about the different connection configurations in the [docs](https://www.prisma.io/docs/reference/database-reference/connection-urls).
 
