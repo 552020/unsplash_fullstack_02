@@ -8,6 +8,7 @@ type Props = {
 };
 
 const Blog: React.FC<Props> = (props) => {
+  console.log(props.feed);
   return (
     <Layout>
       <div className="page">
