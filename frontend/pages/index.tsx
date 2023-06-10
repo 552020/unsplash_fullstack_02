@@ -1,49 +1,38 @@
-import React from 'react'
-import { GetServerSideProps } from 'next'
-import Layout from '../components/Layout'
-import Post, { PostProps } from '../components/Post'
+import React from "react";
+import { GetServerSideProps } from "next";
+import Layout from "../components/Layout";
+import Post, { PostProps } from "../components/Post";
 
 type Props = {
-  feed: PostProps[]
-}
+  feed: PostProps[];
+};
 
-const Blog : React.FC<Props> = props => {
+const Blog: React.FC<Props> = (props) => {
   return (
     <Layout>
       <div className="page">
-        <h1>My Blog</h1>
+        <h1 className="">My Blog</h1>
         <main>
-          {props.feed.map(post => (
-            <div key={post.id} className="post">
+          {props.feed.map((post, index) => (
+            <div
+              key={post.id}
+              className="bg-white transition-shadow duration-100 ease-in hover:shadow-md mt-8 first:mt-0"
+            >
               <Post post={post} />
             </div>
           ))}
         </main>
       </div>
-      <style jsx>{`
-        .post {
-          background: white;
-          transition: box-shadow 0.1s ease-in;
-        }
-
-        .post:hover {
-          box-shadow: 1px 1px 3px #aaa;
-        }
-
-        .post + .post {
-          margin-top: 2rem;
-        }
-      `}</style>
     </Layout>
-  )
-}
+  );
+};
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const res = await fetch('http://localhost:3001/feed')
-  const feed = await res.json()
+  const res = await fetch("http://localhost:3001/feed");
+  const feed = await res.json();
   return {
     props: { feed },
-  }
-}
+  };
+};
 
-export default Blog
+export default Blog;
