@@ -49,15 +49,15 @@ app.get("/filterPosts", async (req, res) => {
 });
 
 app.get(`/post/:id`, async (req, res) => {
-	const { id } = req.params;
-	const post = await prisma.post.findUnique({
-	  where: {
-		id: Number(id),
-	  },
-	  include: { author: true },
-	});
-	res.json(post);
+  const { id } = req.params;
+  const post = await prisma.post.findUnique({
+    where: {
+      id: Number(id),
+    },
+    include: { author: true },
   });
+  res.json(post);
+});
 
 app.get("/drafts", verifyToken, async (req, res) => {
   const posts = await prisma.post.findMany({
@@ -74,85 +74,62 @@ app.post(`/post`, verifyToken, async (req, res) => {
       title,
       content,
       published: false,
-      author: { connect: { id: req.userId },
+      author: { connect: { id: req.userId } },
     },
   });
   res.json(result);
 });
 
-// app.delete(`/post/:id`, verifyToken, async (req, res) => {
-//   const { id } = req.params;
-//   const post = await prisma.post.delete({
-//     where: {
-//       id: Number(id),
-// 	  authorId: req.userId,
-//     },
-//   });
-//   res.json(post);
-// });
-
-
-
-// app.put("/publish/:id", verifyToken, async (req, res) => {
-//   const { id } = req.params;
-//   const post = await prisma.post.update({
-//     where: { id: Number(id), authorId: req.userId },
-//     data: { published: true },
-//   });
-//   res.json(post);
-// });
-
 app.delete(`/post/:id`, verifyToken, async (req, res) => {
-	const { id } = req.params;
-  
-	const post = await prisma.post.findUnique({
-	  where: {
-		id: Number(id),
-	  },
-	});
-  
-	if (!post) {
-	  return res.status(404).json({ error: "Post not found." });
-	}
-  
-	if (post.authorId !== req.userId) {
-	  return res.status(403).json({ error: "You are not authorized to delete this post." });
-	}
-  
-	const deletedPost = await prisma.post.delete({
-	  where: {
-		id: Number(id),
-	  },
-	});
-  
-	res.json(deletedPost);
+  const { id } = req.params;
+
+  const post = await prisma.post.findUnique({
+    where: {
+      id: Number(id),
+    },
   });
-  
-  app.put("/publish/:id", verifyToken, async (req, res) => {
-	const { id } = req.params;
-  
-	const post = await prisma.post.findUnique({
-	  where: {
-		id: Number(id),
-	  },
-	});
-  
-	if (!post) {
-	  return res.status(404).json({ error: "Post not found." });
-	}
-  
-	if (post.authorId !== req.userId) {
-	  return res.status(403).json({ error: "You are not authorized to publish this post." });
-	}
-  
-	const updatedPost = await prisma.post.update({
-	  where: { id: Number(id) },
-	  data: { published: true },
-	});
-  
-	res.json(updatedPost);
+
+  if (!post) {
+    return res.status(404).json({ error: "Post not found." });
+  }
+
+  if (post.authorId !== req.userId) {
+    return res.status(403).json({ error: "You are not authorized to delete this post." });
+  }
+
+  const deletedPost = await prisma.post.delete({
+    where: {
+      id: Number(id),
+    },
   });
-  
+
+  res.json(deletedPost);
+});
+
+app.put("/publish/:id", verifyToken, async (req, res) => {
+  const { id } = req.params;
+
+  const post = await prisma.post.findUnique({
+    where: {
+      id: Number(id),
+    },
+  });
+
+  if (!post) {
+    return res.status(404).json({ error: "Post not found." });
+  }
+
+  if (post.authorId !== req.userId) {
+    return res.status(403).json({ error: "You are not authorized to publish this post." });
+  }
+
+  const updatedPost = await prisma.post.update({
+    where: { id: Number(id) },
+    data: { published: true },
+  });
+
+  res.json(updatedPost);
+});
 
 app.post(`/user`, async (req, res) => {
   const result = await prisma.user.create({
