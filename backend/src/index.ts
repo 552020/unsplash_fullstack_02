@@ -5,19 +5,19 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
+declare global {
+  namespace Express {
+    interface Request {
+      userId?: number;
+    }
+  }
+}
+
 const prisma = new PrismaClient();
 const app = express();
 
 app.use(express.json());
 app.use(cors());
-
-app.get("/drafts", async (req, res) => {
-  const posts = await prisma.post.findMany({
-    where: { published: false },
-    include: { author: true },
-  });
-  res.json(posts);
-});
 
 app.get("/feed", async (req, res) => {
   const posts = await prisma.post.findMany({
@@ -48,48 +48,111 @@ app.get("/filterPosts", async (req, res) => {
   res.json(filteredPosts);
 });
 
-app.post(`/post`, async (req, res) => {
-  const { title, content, authorEmail } = req.body;
+app.get(`/post/:id`, async (req, res) => {
+	const { id } = req.params;
+	const post = await prisma.post.findUnique({
+	  where: {
+		id: Number(id),
+	  },
+	  include: { author: true },
+	});
+	res.json(post);
+  });
+
+app.get("/drafts", verifyToken, async (req, res) => {
+  const posts = await prisma.post.findMany({
+    where: { published: false },
+    include: { author: true },
+  });
+  res.json(posts);
+});
+
+app.post(`/post`, verifyToken, async (req, res) => {
+  const { title, content } = req.body;
   const result = await prisma.post.create({
     data: {
       title,
       content,
       published: false,
-      author: { connect: { email: authorEmail } },
+      author: { connect: { id: req.userId },
     },
   });
   res.json(result);
 });
 
-app.delete(`/post/:id`, async (req, res) => {
-  const { id } = req.params;
-  const post = await prisma.post.delete({
-    where: {
-      id: Number(id),
-    },
-  });
-  res.json(post);
-});
+// app.delete(`/post/:id`, verifyToken, async (req, res) => {
+//   const { id } = req.params;
+//   const post = await prisma.post.delete({
+//     where: {
+//       id: Number(id),
+// 	  authorId: req.userId,
+//     },
+//   });
+//   res.json(post);
+// });
 
-app.get(`/post/:id`, async (req, res) => {
-  const { id } = req.params;
-  const post = await prisma.post.findUnique({
-    where: {
-      id: Number(id),
-    },
-    include: { author: true },
-  });
-  res.json(post);
-});
 
-app.put("/publish/:id", async (req, res) => {
-  const { id } = req.params;
-  const post = await prisma.post.update({
-    where: { id: Number(id) },
-    data: { published: true },
+
+// app.put("/publish/:id", verifyToken, async (req, res) => {
+//   const { id } = req.params;
+//   const post = await prisma.post.update({
+//     where: { id: Number(id), authorId: req.userId },
+//     data: { published: true },
+//   });
+//   res.json(post);
+// });
+
+app.delete(`/post/:id`, verifyToken, async (req, res) => {
+	const { id } = req.params;
+  
+	const post = await prisma.post.findUnique({
+	  where: {
+		id: Number(id),
+	  },
+	});
+  
+	if (!post) {
+	  return res.status(404).json({ error: "Post not found." });
+	}
+  
+	if (post.authorId !== req.userId) {
+	  return res.status(403).json({ error: "You are not authorized to delete this post." });
+	}
+  
+	const deletedPost = await prisma.post.delete({
+	  where: {
+		id: Number(id),
+	  },
+	});
+  
+	res.json(deletedPost);
   });
-  res.json(post);
-});
+  
+  app.put("/publish/:id", verifyToken, async (req, res) => {
+	const { id } = req.params;
+  
+	const post = await prisma.post.findUnique({
+	  where: {
+		id: Number(id),
+	  },
+	});
+  
+	if (!post) {
+	  return res.status(404).json({ error: "Post not found." });
+	}
+  
+	if (post.authorId !== req.userId) {
+	  return res.status(403).json({ error: "You are not authorized to publish this post." });
+	}
+  
+	const updatedPost = await prisma.post.update({
+	  where: { id: Number(id) },
+	  data: { published: true },
+	});
+  
+	res.json(updatedPost);
+  });
+  
 
 app.post(`/user`, async (req, res) => {
   const result = await prisma.user.create({
@@ -140,14 +203,6 @@ app.post("/signin", async (req, res) => {
 
   res.json({ token });
 });
-
-declare global {
-  namespace Express {
-    interface Request {
-      userId?: number;
-    }
-  }
-}
 
 function verifyToken(req: Request, res: Response, next: NextFunction) {
   const token = req.headers.authorization;
