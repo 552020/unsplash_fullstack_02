@@ -5,6 +5,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
+const JWT_SECRET = process.env.JWT_SECRET || "secret";
 declare global {
   namespace Express {
     interface Request {
@@ -152,7 +153,7 @@ app.post("/signup", async (req, res) => {
     },
   });
 
-  const token = jwt.sign({ id: user.id }, "your-secret-key");
+  const token = jwt.sign({ id: user.id }, JWT_SECRET);
 
   res.json({ token });
 });
@@ -188,7 +189,7 @@ function verifyToken(req: Request, res: Response, next: NextFunction) {
     return res.status(403).json({ error: "No token provided." });
   }
 
-  jwt.verify(token, "your-secret-key", (err, decoded) => {
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
     if (err) {
       return res.status(500).json({ error: "Failed to authenticate token." });
     }
