@@ -40,6 +40,7 @@ const SignUp: React.FC = () => {
           });
           const { token } = await res.json();
           localStorage.setItem("token", token);
+          localStorage.setItem("email", email);
           await Router.push("/");
         } catch (error) {
           console.error(error);

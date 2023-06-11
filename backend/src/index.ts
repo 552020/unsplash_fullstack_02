@@ -193,7 +193,8 @@ app.post("/signup", async (req, res) => {
     }
   });
 
-  res.json({ token });
+  //   res.json({ token });
+  res.json({ token, email: user.email });
 });
 
 app.post("/signin", async (req, res) => {
@@ -221,7 +222,8 @@ app.post("/signin", async (req, res) => {
   //   }
   const token = jwt.sign({ id: user.id }, JWT_SECRET);
 
-  res.json({ token });
+  //   res.json({ token });
+  res.json({ token, email: user.email });
 });
 
 app.get("/verify-email", async (req, res) => {
