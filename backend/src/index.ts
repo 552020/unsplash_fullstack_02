@@ -215,10 +215,11 @@ app.post("/signin", async (req, res) => {
     return res.status(400).json({ error: "Invalid password." });
   }
 
-  if (!user.verifiedEmail) {
-    return res.status(400).json({ error: "Email is not verified. Please check your email for the verification link." });
-  }
-  const token = jwt.sign({ id: user.id }, "your-secret-key");
+  // Bypass email verification for testing purposes - TODO: remove later
+  //   if (!user.verifiedEmail) {
+  //     return res.status(400).json({ error: "Email is not verified. Please check your email for the verification link." });
+  //   }
+  const token = jwt.sign({ id: user.id }, JWT_SECRET);
 
   res.json({ token });
 });
@@ -267,3 +268,8 @@ const server = app.listen(PORT, () => console.log(`🚀 Server ready at: http://
 
 //
 // Type assertion is being used in this case to assert that the decoded object has a certain shape, specifically that it has an id property which is a number. This is because JWT decoding in JavaScript is a bit loose and does not provide strict typing. It's not 100% safe because we're basically telling TypeScript "trust me, I know what I'm doing". If the decoded token does not actually have an id property that is a number, it could lead to unexpected behavior. To mitigate this risk, you could add a runtime check to ensure that decoded.id is indeed a number before assigning it to req.userId.
+
+// Note regarding bcrypt.hashSync:
+// The use of the bcrypt library for password hashing is generally recommended. However, consider using an async version of bcrypt.hash instead of bcrypt.hashSync to avoid blocking the event loop. For example, you can use bcrypt.hash with await or wrap it in a Promise to make it asynchronous.
+
+// In the verifyToken function, consider adding a runtime check to ensure that decoded.id is indeed a number before assigning it to req.userId. This can help prevent unexpected behavior if the decoded token doesn't have the expected structure.
