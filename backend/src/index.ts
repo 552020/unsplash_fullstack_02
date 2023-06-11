@@ -4,6 +4,37 @@ import express from "express";
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const nodemailer = require("nodemailer");
+
+let transporter = nodemailer.createTransport({
+  host: "posteo.de", // Posteo SMTP server
+  port: 587,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: "yourusername@posteo.de", // Your Posteo email
+    pass: "yourpassword", // Your Posteo password
+  },
+});
+
+transporter.sendMail(
+  {
+    from: "yourusername@posteo.de",
+    to: "receiver@example.com",
+    subject: "Hello",
+    text: "Hello world",
+  },
+  (err, info) => {
+    if (err) {
+      console.error(err);
+    } else {
+      console.log("Message sent: %s", info.messageId);
+    }
+  }
+);
 
 const port = process.env.PORT || 3001;
 
