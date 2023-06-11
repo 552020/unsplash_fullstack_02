@@ -5,40 +5,25 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
+import nodemailer from "nodemailer";
 
 dotenv.config();
 
-const nodemailer = require("nodemailer");
+const PORT = process.env.PORT || 3001;
+const JWT_SECRET = process.env.JWT_SECRET || "secret";
+const EMAIL_ADDRESSE = process.env.EMAIL_ADDRESSE;
+const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
 
-let transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
   host: "posteo.de", // Posteo SMTP server
   port: 587,
-  secure: false, // true for 465, false for other ports
+  secure: false, // upgrade later with STARTTLS
   auth: {
-    user: "yourusername@posteo.de", // Your Posteo email
-    pass: "yourpassword", // Your Posteo password
+    user: EMAIL_ADDRESSE,
+    pass: EMAIL_PASSWORD,
   },
 });
 
-transporter.sendMail(
-  {
-    from: "yourusername@posteo.de",
-    to: "receiver@example.com",
-    subject: "Hello",
-    text: "Hello world",
-  },
-  (err, info) => {
-    if (err) {
-      console.error(err);
-    } else {
-      console.log("Message sent: %s", info.messageId);
-    }
-  }
-);
-
-const port = process.env.PORT || 3001;
-
-const JWT_SECRET = process.env.JWT_SECRET || "secret";
 declare global {
   namespace Express {
     interface Request {
@@ -183,10 +168,30 @@ app.post("/signup", async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      verifiedEmail: false, // default value
     },
   });
 
   const token = jwt.sign({ id: user.id }, JWT_SECRET);
+
+  // Send verification email after successful registration
+  const verificationLink = `http://localhost:${PORT}/verify-email?token=${token}`;
+
+  const mailOptions = {
+    from: EMAIL_ADDRESSE, // sender address
+    to: email, // list of receivers
+    subject: "Email Verification", // Subject line
+    text: `Hello, please use the following link to verify your email address: ${verificationLink}`, // plain text body
+    html: `<b>Hello,</b><br>please use the following link to verify your email address: <a href="${verificationLink}">${verificationLink}</a>`, // html body
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log(`Email sending error: ${error}`);
+    } else {
+      console.log(`Email sent: ${info.response}`);
+    }
+  });
 
   res.json({ token });
 });
@@ -210,9 +215,33 @@ app.post("/signin", async (req, res) => {
     return res.status(400).json({ error: "Invalid password." });
   }
 
+  if (!user.verifiedEmail) {
+    return res.status(400).json({ error: "Email is not verified. Please check your email for the verification link." });
+  }
   const token = jwt.sign({ id: user.id }, "your-secret-key");
 
   res.json({ token });
+});
+
+app.get("/verify-email", async (req, res) => {
+  const { token } = req.query;
+
+  if (!token) {
+    return res.status(403).json({ error: "No token provided." });
+  }
+
+  jwt.verify(String(token), JWT_SECRET, async (err, decoded) => {
+    if (err) {
+      return res.status(500).json({ error: "Failed to authenticate token." });
+    }
+    const payload = decoded as { id: number };
+    const user = await prisma.user.update({
+      where: { id: payload.id },
+      data: { verifiedEmail: true },
+    });
+
+    res.json({ message: "Email has been successfully verified!" });
+  });
 });
 
 function verifyToken(req: Request, res: Response, next: NextFunction) {
@@ -234,7 +263,7 @@ function verifyToken(req: Request, res: Response, next: NextFunction) {
   });
 }
 
-const server = app.listen(port, () => console.log(`🚀 Server ready at: http://localhost:${port}`));
+const server = app.listen(PORT, () => console.log(`🚀 Server ready at: http://localhost:${PORT}`));
 
 //
 // Type assertion is being used in this case to assert that the decoded object has a certain shape, specifically that it has an id property which is a number. This is because JWT decoding in JavaScript is a bit loose and does not provide strict typing. It's not 100% safe because we're basically telling TypeScript "trust me, I know what I'm doing". If the decoded token does not actually have an id property that is a number, it could lead to unexpected behavior. To mitigate this risk, you could add a runtime check to ensure that decoded.id is indeed a number before assigning it to req.userId.
