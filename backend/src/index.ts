@@ -86,17 +86,24 @@ app.get("/drafts", verifyToken, async (req, res) => {
   res.json(posts);
 });
 
-app.post(`/post`, verifyToken, async (req, res) => {
-  const { title, content } = req.body;
-  const result = await prisma.post.create({
-    data: {
-      title,
-      content,
-      published: false,
-      author: { connect: { id: req.userId } },
-    },
-  });
-  res.json(result);
+app.post(`/post`, verifyToken, async (req: Request, res: Response) => {
+  try {
+    const { title, content } = req.body;
+    console.log(req.body);
+    console.log(req.userId);
+    const result = await prisma.post.create({
+      data: {
+        title,
+        content,
+        published: false,
+        author: { connect: { id: req.userId } },
+      },
+    });
+    res.json(result);
+  } catch (error) {
+    console.log((error as Error).message);
+    res.status(500).json({ error: (error as Error).message });
+  }
 });
 
 app.delete(`/post/:id`, verifyToken, async (req, res) => {
@@ -248,19 +255,25 @@ app.get("/verify-email", async (req, res) => {
 });
 
 function verifyToken(req: Request, res: Response, next: NextFunction) {
-  const token = req.headers.authorization;
+  const token = req.headers.authorization?.split(" ")[1];
+  console.log("token");
+  console.log(token);
 
   if (!token) {
+    console.log("No token provided.");
     return res.status(403).json({ error: "No token provided." });
   }
 
   jwt.verify(token, JWT_SECRET, (err, decoded) => {
     if (err) {
+      console.log("Failed to authenticate token.");
       return res.status(500).json({ error: "Failed to authenticate token." });
     }
     // see note below about this type assertion
     // TODO add a runtime check to ensure that decoded.id is indeed a number before assigning it to req.userId
     const payload = decoded as { id: number };
+    console.log("payload");
+    console.log(payload);
     req.userId = payload.id;
     next();
   });

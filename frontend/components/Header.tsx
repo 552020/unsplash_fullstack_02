@@ -6,20 +6,14 @@ const Header: React.FC = () => {
   const router = useRouter();
   const isActive: (pathname: string) => boolean = (pathname) => router.pathname === pathname;
 
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [email, setEmail] = useState("");
-  const [user, setUser] = useState({
-    email: typeof window !== "undefined" ? localStorage.getItem("email") || "" : "",
-    loggedIn: typeof window !== "undefined" ? Boolean(localStorage.getItem("token")) : false,
-  });
+  const [user, setUser] = useState({ email: "", loggedIn: false });
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const email = typeof window !== "undefined" ? localStorage.getItem("email") : "";
+
     if (token) {
-      setLoggedIn(true);
-      setEmail(localStorage.getItem("email"));
-    } else {
-      setLoggedIn(false);
+      setUser({ email, loggedIn: true });
     }
   }, []);
 
@@ -56,7 +50,7 @@ const Header: React.FC = () => {
             <Link href="/create">
               <span className={isActive("/create") ? "text-gray-500" : "text-black"}>+ Create draft</span>
             </Link>
-            <Link href="/signin">
+            <Link href={`/signin?redirectTo=${router.asPath}`}>
               <span className={isActive("/signin") ? "text-gray-500" : "text-black"}>Signin</span>
             </Link>
           </>

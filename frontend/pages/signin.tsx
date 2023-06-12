@@ -24,12 +24,15 @@ const SignInPage: React.FC = () => {
         const data = await response.json();
         const { token } = data;
 
-        // Store the token in local storage or cookies for future requests
+        // TODO Store the token in local storage or cookies for future requests
         localStorage.setItem("token", token);
         localStorage.setItem("email", email);
 
-        // Redirect to the desired page after successful sign in
-        router.push("/");
+        const { redirectTo } = router.query;
+
+        const path = typeof redirectTo === "string" ? redirectTo : "/";
+
+        router.push(path);
       } else {
         const errorData = await response.json();
         const { error } = errorData;
