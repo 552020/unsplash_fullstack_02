@@ -182,7 +182,7 @@ app.post("/signup", async (req, res) => {
   const token = jwt.sign({ id: user.id }, JWT_SECRET);
 
   // Send verification email after successful registration
-  const verificationLink = `http://localhost:${PORT}/verify-email?token=${token}`;
+  const verificationLink = `${process.env.NEXT_PUBLIC_API_URL}/verify-email?token=${token}`;
 
   const mailOptions = {
     from: EMAIL_ADDRESSE, // sender address
