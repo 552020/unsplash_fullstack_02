@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import Router from "next/router";
-import Link from "next/link";
-
-const Test = () => <h1>Hello Test!</h1>;
 
 const Draft: React.FC = () => {
   const [title, setTitle] = useState("");
@@ -26,22 +23,16 @@ const Draft: React.FC = () => {
   const submitData = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     try {
-      console.log("timestamp: ", Date.now());
-      console.log("process.env.NEXT_PUBLIC_API_URL", process.env.NEXT_PUBLIC_API_URL);
       const body = { title, content, authorEmail };
-      console.log("body: ", body);
       const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       };
-      console.log("headers: ", headers);
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/post`, {
         method: "POST",
         headers: headers,
         body: JSON.stringify(body),
       });
-      console.log();
-      console.log("res: ", res);
       await Router.push("/create");
     } catch (error) {
       console.error(error);
