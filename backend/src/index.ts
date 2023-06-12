@@ -81,7 +81,7 @@ app.get(`/post/:id`, async (req, res) => {
 app.get("/drafts", verifyToken, async (req, res) => {
   try {
     const posts = await prisma.post.findMany({
-      where: { published: false },
+      where: { published: false, authorId: req.userId },
       include: { author: true },
     });
     res.json(posts);
