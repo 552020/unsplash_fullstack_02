@@ -66,9 +66,9 @@ const Post: React.FC<PostProps> = props => {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const res = await fetch(`http://localhost:3001/post/${context.params.id}`)
-  const data = await res.json()
-  return { props: { ...data } }
-}
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/${context.params.id}`);, {
+  const data = await res.json();
+  return { props: { ...data } };
+};
 
 export default Post

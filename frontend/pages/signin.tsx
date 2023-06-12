@@ -11,11 +11,8 @@ const SignInPage: React.FC = () => {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Perform client-side validation if needed
-
     try {
-      // Send a request to the server to authenticate the user
-      const response = await fetch("http://localhost:3001/signin", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

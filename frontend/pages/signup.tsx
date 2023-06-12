@@ -33,7 +33,7 @@ const SignUp: React.FC = () => {
         return;
       } else {
         try {
-          const res = await fetch(`http://localhost:3001/signup`, {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/signup`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(body),
