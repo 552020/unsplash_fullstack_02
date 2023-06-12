@@ -79,11 +79,16 @@ app.get(`/post/:id`, async (req, res) => {
 });
 
 app.get("/drafts", verifyToken, async (req, res) => {
-  const posts = await prisma.post.findMany({
-    where: { published: false },
-    include: { author: true },
-  });
-  res.json(posts);
+  try {
+    const posts = await prisma.post.findMany({
+      where: { published: false },
+      include: { author: true },
+    });
+    res.json(posts);
+  } catch (error) {
+    console.log((error as Error).message);
+    res.status(500).json({ error: (error as Error).message });
+  }
 });
 
 app.post(`/post`, verifyToken, async (req: Request, res: Response) => {
