@@ -11,7 +11,7 @@ dotenv.config();
 
 const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || "secret";
-const EMAIL_ADDRESSE = process.env.EMAIL_ADDRESSE;
+const EMAIL_ADDRESS = process.env.EMAIL_ADDRESS;
 const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
 
 const transporter = nodemailer.createTransport({
@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false, // upgrade later with STARTTLS
   auth: {
-    user: EMAIL_ADDRESSE,
+    user: EMAIL_ADDRESS,
     pass: EMAIL_PASSWORD,
   },
 });
@@ -162,6 +162,31 @@ app.put("/publish/:id", verifyToken, async (req, res) => {
   res.json(updatedPost);
 });
 
+app.put("/unpublish/:id", verifyToken, async (req, res) => {
+  const { id } = req.params;
+
+  const post = await prisma.post.findUnique({
+    where: {
+      id: Number(id),
+    },
+  });
+
+  if (!post) {
+    return res.status(404).json({ error: "Post not found." });
+  }
+
+  if (post.authorId !== req.userId) {
+    return res.status(403).json({ error: "You are not authorized to publish this post." });
+  }
+
+  const updatedPost = await prisma.post.update({
+    where: { id: Number(id) },
+    data: { published: false },
+  });
+
+  res.json(updatedPost);
+});
+
 app.post(`/user`, async (req, res) => {
   const result = await prisma.user.create({
     data: {
@@ -190,7 +215,7 @@ app.post("/signup", async (req, res) => {
   const verificationLink = `${process.env.NEXT_PUBLIC_API_URL}/verify-email?token=${token}`;
 
   const mailOptions = {
-    from: EMAIL_ADDRESSE, // sender address
+    from: EMAIL_ADDRESS, // sender address
     to: email, // list of receivers
     subject: "Email Verification", // Subject line
     text: `Hello, please use the following link to verify your email address: ${verificationLink}`, // plain text body
