@@ -25,35 +25,61 @@ const Header: React.FC = () => {
   };
 
   return (
-    <nav className="flex items-center py-8 px-4">
+    <nav className="flex items-center py-3 px-4 border border-black container mx-auto rounded">
       <div className="flex items-center space-x-6">
         <Link href="/">
-          <span className={`font-bold ${isActive("/") ? "text-gray-500" : "text-black"}`}>Blog</span>
+          <span className={`${isActive("/") ? "font-bold text-black" : "text-gray-500"}`}>Home</span>
         </Link>
-        <Link href="/drafts">
-          <span className={isActive("/drafts") ? "text-gray-500" : "text-black"}>Drafts</span>
-        </Link>
+        {user.loggedIn && (
+          <Link href="/drafts">
+            <span className={isActive("/drafts") ? "text-black font-bold " : "text-gray-500"}>Drafts</span>
+          </Link>
+        )}
       </div>
-      <div className="ml-auto space-x-4">
+      <div className="  ml-auto space-x-4">
         {user.loggedIn ? (
-          <>
-            <div className="text-gray-500">Logged in as {user.email}</div>
-            <button onClick={handleSignOut} className="border border-black px-4 py-2 rounded">
-              Sign out
-            </button>
-          </>
+          <div>
+            <div className="flex space-x-1 ">
+              <button
+                onClick={handleSignOut}
+                className="bg-blue-200 hover:bg-blue-500 hover:text-white flex  border border-black px-4 py-2 rounded"
+              >
+                Sign out
+              </button>
+              <Link
+                className={`  hover:bg-blue-500 hover:text-white p-2 rounded bg-blue-200 ${
+                  isActive("/create") ? "text-gray-500" : "text-black"
+                }`}
+                href="/create"
+              >
+                <span>New Post</span>
+              </Link>
+            </div>
+
+            <div className="p-1 rounded bg-slate-50 border border-black text-xs">Logged in as {user.email}</div>
+          </div>
         ) : (
-          <>
+          <div>
             <Link href="/signup">
-              <span className={isActive("/signup") ? "text-gray-500" : "text-black"}>Signup</span>
+              <span
+                className={` p-2 rounded bg-blue-200 hover:bg-blue-500 hover:text-white ${
+                  isActive("/signup") ? "text-gray-500" : "text-black"
+                }`}
+              >
+                Signup
+              </span>
             </Link>
-            <Link href="/create">
-              <span className={isActive("/create") ? "text-gray-500" : "text-black"}>+ Create draft</span>
-            </Link>
+
             <Link href={`/signin?redirectTo=${router.asPath}`}>
-              <span className={isActive("/signin") ? "text-gray-500" : "text-black"}>Signin</span>
+              <span
+                className={`border border-black p-2 rounded bg-blue-200 hover:bg-blue-500 hover:text-white ${
+                  isActive("/signup") ? "text-gray-500" : "text-black"
+                }`}
+              >
+                Signin
+              </span>
             </Link>
-          </>
+          </div>
         )}
       </div>
     </nav>
