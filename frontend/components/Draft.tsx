@@ -1,61 +1,73 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import Router from "next/router";
 import { getAuthToken } from "../utils/auth";
-import { createPost, deletePost, publishPost } from "../utils/api";
+import { createPost, deletePost, publishPost, unpublishPost, getPostByIdAuth, updatePost } from "../utils/api";
 
 export interface DraftProps {
-  isLoggedIn?: boolean;
-  post: Post;
+  postId: string | string[] | undefined;
 }
 
-interface Author {
-  id: number;
-  name: string;
-  email: string;
-}
-interface Post {
-  id: number;
-  title: string;
-  content: string;
-  published: boolean;
-  author: Author;
-}
+const Draft: React.FC<DraftProps> = ({ postId }) => {
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [published, setPublished] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [authorEmail, setAuthorEmail] = useState("");
 
-const Draft: React.FC<DraftProps> = ({
-  isLoggedIn: initialIsLoggedIn = false, // this uses the initial value if `isLoggedIn` prop is undefined
-  post = {
-    id: null,
-    title: "",
-    content: "",
-    published: false,
-    author: {
-      id: 0, // you can set these defaults according to your requirements
-      name: "",
-      email: "",
-    },
-  },
-}) => {
-  const {
-    id: initialId,
-    title: initialTitle,
-    content: initialContent,
-    published: initialPublished,
-    author: { email: initialAuthorEmail },
-  } = post;
+  useEffect(() => {
+    if (!postId) return;
+    setIsLoading(true);
+    const fetchPost = async () => {
+      try {
+        const post = await getPostByIdAuth(postId.toString());
+        setTitle(post.title);
+        setContent(post.content);
+        setPublished(post.published);
+        setIsLoading(false);
+      } catch (error) {
+        setError(error);
+        setIsLoading(false);
+      }
+    };
+    fetchPost();
+  }, [postId]);
 
-  const [title, setTitle] = useState(initialTitle);
-  const [content, setContent] = useState(initialContent);
-  const [authorEmail, setAuthorEmail] = useState(initialAuthorEmail);
-  const [published, setPublished] = useState(initialPublished);
-  const [isLoggedIn, setIsLoggedIn] = useState(initialIsLoggedIn);
+  if (!postId) {
+    return <div>Loading...</div>;
+  }
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
 
-  const createPostHandler = async (e: React.SyntheticEvent) => {
+  const createOrUpdatePostHandler = async (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    try {
+      let res;
+      if (!postId) {
+        setAuthorEmail(localStorage.getItem("email"));
+        res = await createPost(title, content, authorEmail, true);
+      } else {
+        res = await updatePost(postId, title, content, authorEmail, true);
+      }
+      console.log(res);
+      if (postId) {
+        await Router.push(`/posts/${postId}`);
+      } else {
+        await Router.push("/create");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const unpublishPostHandler = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     try {
       const token = getAuthToken();
-      const res = await createPost(title, content, authorEmail, token, true); // `published` is true
+      const res = await unpublishPost(postId);
       console.log(res);
-      await Router.push("/create");
+      await Router.push(`/posts/${postId}`);
     } catch (error) {
       console.error(error);
     }
@@ -64,6 +76,7 @@ const Draft: React.FC<DraftProps> = ({
   const saveAsDraftHandler = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     try {
+      const authorEmail = localStorage.getItem("email");
       const token = getAuthToken();
       const res = await createPost(title, content, authorEmail, token, false); // `published` is false
       console.log(res);
@@ -72,68 +85,6 @@ const Draft: React.FC<DraftProps> = ({
       console.error(error);
     }
   };
-
-  const handleDelete = async () => {
-    const draftToDelete: DraftProps = {
-      isLoggedIn,
-      post: {
-        id: initialId,
-        title,
-        content,
-        published,
-        author: {
-          id: 0, // Update with the correct author ID if needed
-          name: "", // Update with the correct author name if needed
-          email: authorEmail,
-        },
-      },
-    };
-
-    try {
-      await deletePost(draftToDelete);
-      // Handle success or perform any other necessary action
-      // For example, show a success message or redirect the user
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handlePublish = async () => {
-    const draftToPublish: DraftProps = {
-      isLoggedIn,
-      post: {
-        id: initialId,
-        title,
-        content,
-        published: true, // Mark as published
-        author: {
-          id: 0, // Update with the correct author ID if needed
-          name: "", // Update with the correct author name if needed
-          email: authorEmail,
-        },
-      },
-    };
-
-    try {
-      await publishPost(draftToPublish);
-      // Handle success or perform any other necessary action
-      // For example, show a success message or redirect the user
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-    const email = typeof window !== "undefined" ? localStorage.getItem("email") : null;
-    if (token) {
-      setIsLoggedIn(true);
-    }
-
-    if (email) {
-      setAuthorEmail(email);
-    }
-  }, []);
 
   const submitData = async (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -174,10 +125,19 @@ const Draft: React.FC<DraftProps> = ({
             className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 items-center"
             disabled={!content || !title}
             type="button"
-            onClick={createPostHandler}
+            onClick={createOrUpdatePostHandler}
           >
-            Publish
+            {postId ? "Update" : "Publish"}
           </button>
+          {postId && published && (
+            <button
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 items-center"
+              type="button"
+              onClick={unpublishPostHandler}
+            >
+              Unpublish
+            </button>
+          )}
           <button
             className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 items-center"
             disabled={!content || !title}
