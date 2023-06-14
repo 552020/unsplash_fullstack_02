@@ -5,11 +5,11 @@ import Link from "next/link";
 export const getServerSideProps = null;
 export const config = { unstable_runtimeJS: false };
 
-type Props = {
+type DraftsProps = {
   drafts: PostProps[];
 };
 
-const Drafts: React.FC<Props> = (props) => {
+const Drafts: React.FC<DraftsProps> = (props) => {
   const [drafts, setDrafts] = useState<PostProps[]>([]);
   const [loggedIn, setLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true); // add a loading state
