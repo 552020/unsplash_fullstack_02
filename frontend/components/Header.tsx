@@ -25,14 +25,32 @@ const Header: React.FC = () => {
   };
 
   return (
-    <nav className="flex items-center py-3 px-4 border border-black container mx-auto rounded">
-      <div className="flex items-center space-x-6">
+    <nav className="flex items-center py-3 px-4 bg-blue-50  container mx-auto rounded">
+      <div className="flex items-center space-x-4">
         <Link href="/">
-          <span className={`${isActive("/") ? "font-bold text-black" : "text-gray-500"}`}>Home</span>
+          <span
+            className={`bg-blue-200 p-3 hover:bg-blue-500 hover:text-white  hover:bg-blue-500 hover:text-white
+              
+                 hover:bg-blue-500 hvoover:text-white4 hover:bg-blue-500 hover:text-hwhite
+              
+                 hover:bg-blue-500 hvoover:text-white4 hover:bg-blue-500 hover:text-hwhite
+              
+                 hover:bg-blue-500 hvoover:text-white rounded ${
+                   isActive("/") ? "font-bold text-black" : "text-gray-500"
+                 }`}
+          >
+            Home
+          </span>
         </Link>
         {user.loggedIn && (
           <Link href="/drafts">
-            <span className={isActive("/drafts") ? "text-black font-bold " : "text-gray-500"}>Drafts</span>
+            <span
+              className={` bg-blue-200 p-3 rounded hover:bg-blue-500 hover:text-white ${
+                isActive("/drafts") ? "text-black font-bold " : "text-gray-500"
+              }`}
+            >
+              Drafts
+            </span>
           </Link>
         )}
       </div>
@@ -42,7 +60,7 @@ const Header: React.FC = () => {
             <div className="flex space-x-1 ">
               <button
                 onClick={handleSignOut}
-                className="bg-blue-200 hover:bg-blue-500 hover:text-white flex  border border-black px-4 py-2 rounded"
+                className="bg-blue-200 hover:bg-blue-500 hover:text-white flex  px-3 py-2 rounded"
               >
                 Sign out
               </button>
@@ -56,7 +74,7 @@ const Header: React.FC = () => {
               </Link>
             </div>
 
-            <div className="p-1 rounded bg-slate-50 border border-black text-xs">Logged in as {user.email}</div>
+            <div className="p-1 rounded bg-slate-50  text-xs">Logged in as {user.email}</div>
           </div>
         ) : (
           <div>
