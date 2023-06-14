@@ -140,6 +140,32 @@ app.delete(`/post/:id`, verifyToken, async (req, res) => {
   res.json(deletedPost);
 });
 
+app.put(`/post/:id`, verifyToken, async (req, res) => {
+  const { id } = req.params;
+  const { title, content, published } = req.body;
+
+  const post = await prisma.post.findUnique({
+    where: {
+      id: Number(id),
+    },
+  });
+
+  if (!post) {
+    return res.status(404).json({ error: "Post not found." });
+  }
+
+  if (post.authorId !== req.userId) {
+    return res.status(403).json({ error: "You are not authorized to update this post." });
+  }
+
+  const updatedPost = await prisma.post.update({
+    where: { id: Number(id) },
+    data: { title, content, published },
+  });
+
+  res.json(updatedPost);
+});
+
 app.put("/publish/:id", verifyToken, async (req, res) => {
   const { id } = req.params;
 
