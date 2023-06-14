@@ -93,18 +93,21 @@ app.get("/drafts", verifyToken, async (req, res) => {
 
 app.post(`/post`, verifyToken, async (req: Request, res: Response) => {
   try {
-    const { title, content } = req.body;
+    const { title, content, published = false } = req.body;
     console.log(req.body);
     console.log(req.userId);
     const result = await prisma.post.create({
       data: {
         title,
         content,
-        published: false,
+        published,
+
         author: { connect: { id: req.userId } },
       },
     });
     res.json(result);
+    console.log("result of /post");
+    console.log(result);
   } catch (error) {
     console.log((error as Error).message);
     res.status(500).json({ error: (error as Error).message });
