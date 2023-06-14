@@ -136,7 +136,7 @@ The app is now running, navigate to [`http://localhost:3000/`](http://localhost:
 
 ![](https://imgur.com/PSMzhcd.png)
 
-**View post** (located in [`./pages/p/[id].tsx`](./pages/p/[id].tsx)) (delete or publish here)
+**View post** (located in [`./pages/posts/[id].tsx`](./pages/posts/[id].tsx)) (delete or publish here)
 
 ![](https://imgur.com/zS1B11O.png)
 
