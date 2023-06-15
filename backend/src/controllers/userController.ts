@@ -17,6 +17,8 @@ export async function signUpUser(req: Request, res: Response) {
       },
     });
     const token = jwt.sign({ id: user.id }, JWT_SECRET);
+    // Set the JWT as a cookie
+    res.cookie("jwt", token, { httpOnly: true });
     const verificationLink = `${process.env.NEXT_PUBLIC_API_URL}/verify-email?token=${token}`;
     const mailOptions = {
       from: EMAIL_ADDRESS,
@@ -62,7 +64,10 @@ export async function signInUser(req: Request, res: Response) {
     //   if (!user.verifiedEmail) {
     //     return res.status(400).json({ error: "Email is not verified. Please check your email for the verification link." });
     //   }
-    const token = jwt.sign({ id: user.id }, JWT_SECRET);
+    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "3h" });
+
+    // Set the JWT as a cookie
+    res.cookie("jwt", token, { httpOnly: true });
 
     res.json({ token, email: user.email });
   } catch (error) {
