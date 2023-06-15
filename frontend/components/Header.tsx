@@ -29,15 +29,9 @@ const Header: React.FC = () => {
       <div className="flex items-center space-x-4">
         <Link href="/">
           <span
-            className={`bg-blue-200 p-3 hover:bg-blue-500 hover:text-white  hover:bg-blue-500 hover:text-white
-              
-                 hover:bg-blue-500 hvoover:text-white4 hover:bg-blue-500 hover:text-hwhite
-              
-                 hover:bg-blue-500 hvoover:text-white4 hover:bg-blue-500 hover:text-hwhite
-              
-                 hover:bg-blue-500 hvoover:text-white rounded ${
-                   isActive("/") ? "font-bold text-black" : "text-gray-500"
-                 }`}
+            className={`bg-blue-200 p-3 hover:bg-blue-500 hover:text-white rounded ${
+              isActive("/") ? "font-bold text-black" : "text-gray-500"
+            }`}
           >
             Home
           </span>
