@@ -11,13 +11,14 @@ import {
   getFilteredPosts,
 } from "../controllers/postController";
 import verifyToken from "../middlewares/verifyToken";
+import checkPublicPost from "../middlewares/checkPublicPost";
 
 const router = express.Router();
 
 router.get("/feed", getPosts);
 router.get("/drafts", verifyToken, getDrafts);
 router.get("/filterPosts", getFilteredPosts);
-router.get("/:id", verifyToken, getPostById);
+router.get("/:id", checkPublicPost, verifyToken, getPostById);
 router.post("/", verifyToken, createPost);
 router.put("/publish/:id", verifyToken, publishPost);
 router.put("/unpublish/:id", verifyToken, unpublishPost);
