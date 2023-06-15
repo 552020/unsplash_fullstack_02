@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import Cookies from "js-cookie";
 
 const Header: React.FC = () => {
   const router = useRouter();
@@ -20,6 +21,7 @@ const Header: React.FC = () => {
   const handleSignOut = async () => {
     localStorage.removeItem("token");
     localStorage.removeItem("email");
+    Cookies.remove("token");
     setUser({ email: "", loggedIn: false });
     router.push("/");
   };

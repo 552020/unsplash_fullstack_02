@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 import Layout from "../../components/Layout";
 import Router from "next/router";
 import { PostProps } from "../../components/Post";
-import nextCookie from "next-cookies";
+import nookies from "nookies";
 import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -77,7 +77,12 @@ const Post: React.FC<PostProps> = (props) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { token } = nextCookie(context);
+  const cookies = nookies.get(context);
+  const token = cookies.token;
+
+  console.log(context);
+  console.log("getServerSideProps");
+  console.log(token);
 
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts/${context.params.id}`, {
     headers: token ? { Authorization: `Bearer ${token}` } : {},

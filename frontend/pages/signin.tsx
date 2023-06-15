@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
+import Cookies from "js-cookie";
 
 const SignInPage: React.FC = () => {
   const router = useRouter();
@@ -23,6 +24,7 @@ const SignInPage: React.FC = () => {
       if (response.ok) {
         const data = await response.json();
         const { token } = data;
+        Cookies.set("token", token);
 
         // TODO Store the token in local storage or cookies for future requests
         localStorage.setItem("token", token);
