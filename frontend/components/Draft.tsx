@@ -4,7 +4,7 @@ import { getAuthToken } from "../utils/auth";
 import { createPost, deletePost, publishPost, unpublishPost, getPostByIdAuth, updatePost } from "../utils/api";
 
 export interface DraftProps {
-  postId: string | string[] | undefined;
+  postId?: string | string[] | undefined;
 }
 
 const Draft: React.FC<DraftProps> = ({ postId }) => {
@@ -78,7 +78,7 @@ const Draft: React.FC<DraftProps> = ({ postId }) => {
     try {
       const authorEmail = localStorage.getItem("email");
       const token = getAuthToken();
-      const res = await createPost(title, content, authorEmail, token, false); // `published` is false
+      const res = await createPost(title, content, authorEmail, false); // `published` is false
       console.log(res);
       await Router.push("/create");
     } catch (error) {
@@ -90,7 +90,7 @@ const Draft: React.FC<DraftProps> = ({ postId }) => {
     e.preventDefault();
     try {
       const token = getAuthToken();
-      const res = await createPost(title, content, authorEmail, token, published);
+      const res = await createPost(title, content, authorEmail, published);
       console.log(res);
       await Router.push("/create");
     } catch (error) {
