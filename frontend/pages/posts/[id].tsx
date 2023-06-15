@@ -4,9 +4,7 @@ import Layout from "../../components/Layout";
 import Router from "next/router";
 import { PostProps } from "../../components/Post";
 import nookies from "nookies";
-import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET;
 async function publish(id: number): Promise<void> {
   await fetch(`${process.env.NEXT_PUBLIC_API_URL}/publish/${id}`, {
     method: "PUT",
