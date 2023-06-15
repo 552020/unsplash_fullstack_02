@@ -77,41 +77,41 @@ const Post: React.FC<PostProps> = (props) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { req } = context;
   const { token } = nextCookie(context);
 
-  // if no token, redirect to login
-  if (!token) {
-    return {
-      redirect: {
-        destination: "/users/signup",
-        permanent: false,
-      },
-    };
-  }
-
-  // you might want to verify the JWT here and handle the case where it's not valid
-  try {
-    jwt.verify(token, JWT_SECRET);
-  } catch (e) {
-    return {
-      redirect: {
-        destination: "/users/signin",
-        permanent: false,
-      },
-    };
-  }
-  console.log("content params.id");
-  console.log(context.params.id);
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts/${context.params.id}`, {
-    headers: {
-      Authorization: `Bearer ${jwt}`,
-    },
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
 
+  // When status is 404, redirect to a 404 page
+  if (res.status === 404) {
+    return {
+      notFound: true,
+    };
+  }
+
+  // When status is 401 or 403, redirect to login page
+  if (res.status === 401 || res.status === 403) {
+    return {
+      redirect: {
+        destination: "/signup",
+        permanent: false,
+      },
+    };
+  }
+
+  // When status is 500, show an error page
+  if (res.status === 500) {
+    return {
+      redirect: {
+        destination: "/500",
+        permanent: false,
+      },
+    };
+  }
+
   const data = await res.json();
-  console.log("data");
-  console.log(data);
+
   return { props: { ...data } };
 };
 
