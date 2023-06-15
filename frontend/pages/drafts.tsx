@@ -70,19 +70,17 @@ const Drafts: React.FC<DraftsProps> = () => {
         </Link>
       </div>
     );
-  } else {
-    content = drafts.map((post) => (
-      <div key={post.id} className="post mb-8 p-4 border border-gray-300 rounded shadow-lg">
-        <Post post={post} />
-      </div>
-    ));
   }
 
   return (
     <Layout>
       <div className="m-4">
         <h1 className="text-3xl font-semibold mb-4">Drafts</h1>
-        {content}
+        {drafts.map((post) => (
+          <div key={post.id} className="post mb-8 p-4 border border-gray-300 rounded shadow-lg">
+            <Post post={post} />
+          </div>
+        ))}
       </div>
     </Layout>
   );
