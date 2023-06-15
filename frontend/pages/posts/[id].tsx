@@ -3,7 +3,10 @@ import ReactMarkdown from "react-markdown";
 import Layout from "../../components/Layout";
 import Router from "next/router";
 import { PostProps } from "../../components/Post";
+import nextCookie from "next-cookies";
+import jwt from "jsonwebtoken";
 
+const JWT_SECRET = process.env.JWT_SECRET;
 async function publish(id: number): Promise<void> {
   await fetch(`${process.env.NEXT_PUBLIC_API_URL}/publish/${id}`, {
     method: "PUT",
@@ -74,9 +77,37 @@ const Post: React.FC<PostProps> = (props) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { req } = context;
+  const { token } = nextCookie(context);
+
+  // if no token, redirect to login
+  if (!token) {
+    return {
+      redirect: {
+        destination: "/users/signup",
+        permanent: false,
+      },
+    };
+  }
+
+  // you might want to verify the JWT here and handle the case where it's not valid
+  try {
+    jwt.verify(token, JWT_SECRET);
+  } catch (e) {
+    return {
+      redirect: {
+        destination: "/users/signin",
+        permanent: false,
+      },
+    };
+  }
   console.log("content params.id");
   console.log(context.params.id);
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts/${context.params.id}`);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts/${context.params.id}`, {
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
 
   const data = await res.json();
   console.log("data");
