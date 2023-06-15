@@ -12,7 +12,7 @@ const SignInPage: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/signin`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
