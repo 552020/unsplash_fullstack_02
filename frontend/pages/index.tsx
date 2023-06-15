@@ -29,7 +29,7 @@ const Blog: React.FC<Props> = (props) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/feed`);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts/feed`);
   const feed = await res.json();
   return {
     props: { feed },
