@@ -1,56 +1,65 @@
-import { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import Post, { PostProps } from "../components/Post";
 import Link from "next/link";
-export const getServerSideProps = null;
-export const config = { unstable_runtimeJS: false };
+import { useState, useEffect } from "react";
+import { getAuthToken, getAuthEmail } from "../utils/auth";
 
 type DraftsProps = {
   drafts: PostProps[];
 };
 
-const Drafts: React.FC<DraftsProps> = (props) => {
+const Drafts: React.FC<DraftsProps> = () => {
   const [drafts, setDrafts] = useState<PostProps[]>([]);
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [loading, setLoading] = useState(true); // add a loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // It would be better to ssolve this server side with cookies. We had to add a loading state to prevent hydration errors.
-    const token = localStorage.getItem("token");
-    setLoggedIn(!!token);
+    const token = getAuthToken();
+    console.log("token", token);
+    const email = getAuthEmail();
+    console.log("mail", email);
+    const body = JSON.stringify({ email: email });
+    console.log("body", body);
+    if (!token) {
+      setLoading(false);
+      return;
+    }
 
-    if (token) {
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/drafts`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (!Array.isArray(data)) {
-            console.error("API returned non-array response:", data);
-            return;
-          }
+    try {
+      console.log("hello fetchData");
+
+      const fetchData = async () => {
+        const url = `${process.env.NEXT_PUBLIC_API_URL}/posts/drafts?email=${encodeURIComponent(email)}`;
+        // const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts/drafts`, {
+        const res = await fetch(url, {
+          headers: { body, Authorization: `Bearer ${token}` },
+        });
+        console.log("body", body);
+        console.log(body);
+        console.log("res", res);
+        console.log(res);
+
+        try {
+          const data = await res.json();
           setDrafts(data);
           setLoading(false);
-        })
-        .catch((error) => {
+        } catch (error) {
           console.error(error);
-          setLoading(false);
-        });
-    } else {
+        }
+      };
+
+      fetchData();
+    } catch (error) {
+      console.error(error);
       setLoading(false);
     }
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>; // render a loading message while loading
+    return <div>Loading...</div>;
   }
 
-  let content;
-
-  if (!loggedIn) {
-    content = <p>Please log in to see your drafts.</p>;
-  } else if (drafts.length === 0) {
-    content = (
+  if (drafts.length === 0) {
+    return (
       <div>
         <p>There are no drafts.</p>
         <Link
