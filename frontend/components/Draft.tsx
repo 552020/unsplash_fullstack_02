@@ -33,9 +33,6 @@ const Draft: React.FC<DraftProps> = ({ postId }) => {
     fetchPost();
   }, [postId]);
 
-  if (!postId) {
-    return <div>Loading...</div>;
-  }
   if (error) {
     return <div>Error: {error.message}</div>;
   }
