@@ -10,7 +10,7 @@ export const getPostByIdAuth = async (id: string) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     };
-    const res = await fetch(`${NEXT_PUBLIC_API_URL}/post/${id}`, { headers: headers });
+    const res = await fetch(`${NEXT_PUBLIC_API_URL}/posts/${id}`, { headers: headers });
     const post = await res.json();
     return post;
   } catch (error) {
@@ -26,7 +26,7 @@ export const createPost = async (title: string, content: string, authorEmail: st
       Authorization: `Bearer ${token}`,
     };
     const body = { title, content, authorEmail, published };
-    const res = await fetch(`${NEXT_PUBLIC_API_URL}/post`, {
+    const res = await fetch(`${NEXT_PUBLIC_API_URL}/posts/`, {
       method: "POST",
       headers: headers,
       body: JSON.stringify(body),
@@ -49,7 +49,7 @@ export const createPost = async (title: string, content: string, authorEmail: st
 export async function updatePost(id, title, content, authorEmail, published) {
   try {
     const token = getAuthToken();
-    const response = await fetch(`${NEXT_PUBLIC_API_URL}/post/${id}`, {
+    const response = await fetch(`${NEXT_PUBLIC_API_URL}/posts/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -70,7 +70,7 @@ export async function updatePost(id, title, content, authorEmail, published) {
 // to delete a post we need only the post id
 export const deletePost = async (postId) => {
   try {
-    const res = await fetch(`${NEXT_PUBLIC_API_URL}/post/${postId}`, {
+    const res = await fetch(`${NEXT_PUBLIC_API_URL}/posts/${postId}`, {
       method: "DELETE",
       headers: headersWithToken,
       body: JSON.stringify(postId),
@@ -85,7 +85,7 @@ export const deletePost = async (postId) => {
 export const publishPost = async (postId) => {
   try {
     const body = { published: true };
-    const res = await fetch(`${NEXT_PUBLIC_API_URL}/publish/${postId}`, {
+    const res = await fetch(`${NEXT_PUBLIC_API_URL}/posts/publish/${postId}`, {
       method: "PUT",
       headers: headersWithToken,
       body: JSON.stringify(body),
@@ -100,7 +100,7 @@ export const publishPost = async (postId) => {
 export const unpublishPost = async (postId) => {
   try {
     const body = { published: false };
-    const res = await fetch(`${NEXT_PUBLIC_API_URL}/publish/${postId}`, {
+    const res = await fetch(`${NEXT_PUBLIC_API_URL}/posts/unpublish/${postId}`, {
       method: "PUT",
       headers: headersWithToken,
       body: JSON.stringify(false),
