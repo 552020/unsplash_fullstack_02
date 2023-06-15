@@ -28,18 +28,47 @@ export async function getPostById(req: Request, res: Response) {
     res.status(500).json({ error: (error as Error).message });
   }
 }
+// export async function getDrafts(req: Request, res: Response) {
+//   try {
+//     const posts = await prisma.post.findMany({
+//       where: { published: false, authorId: req.userId },
+//       include: { author: true },
+//     });
+//     res.json(posts);
+//   } catch (error) {
+//     console.log((error as Error).message);
+//     res.status(500).json({ error: (error as Error).message });
+//   }
+// }
+
 export async function getDrafts(req: Request, res: Response) {
+  //   const { email } = req.body;
+  const email = req.query.email as string;
+  console.log("email", email);
+  console.log("hello getDrafts");
+
   try {
+    // Assuming that req.email is available
+    const author = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!author) {
+      return res.status(404).json({ error: "Author not found" });
+    }
+
     const posts = await prisma.post.findMany({
-      where: { published: false, authorId: req.userId },
+      where: { published: false, authorId: author.id },
       include: { author: true },
     });
+
     res.json(posts);
   } catch (error) {
     console.log((error as Error).message);
     res.status(500).json({ error: (error as Error).message });
   }
 }
+
 export async function getFilteredPosts(req: Request, res: Response) {
   const { searchString } = req.query;
   if (typeof searchString !== "string") {
