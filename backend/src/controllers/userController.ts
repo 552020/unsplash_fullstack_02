@@ -6,7 +6,8 @@ import nodemailer from "nodemailer";
 
 export async function signUpUser(req: Request, res: Response) {
   const { name, email, password } = req.body;
-  const hashedPassword = bcrypt.hashSync(password, 10);
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
   try {
     const user = await prisma.user.create({
       data: {
@@ -18,7 +19,7 @@ export async function signUpUser(req: Request, res: Response) {
     });
     const token = jwt.sign({ id: user.id }, JWT_SECRET);
     // Set the JWT as a cookie
-    res.cookie("jwt", token, { httpOnly: true });
+    res.cookie("jwt", token, { httpOnly: true, secure: true });
     const verificationLink = `${process.env.NEXT_PUBLIC_API_URL}/verify-email?token=${token}`;
     const mailOptions = {
       from: EMAIL_ADDRESS,
@@ -55,7 +56,7 @@ export async function signInUser(req: Request, res: Response) {
       return res.status(400).json({ error: "No user found with this email." });
     }
 
-    const passwordIsValid = bcrypt.compareSync(password, user.password);
+    const passwordIsValid = await bcrypt.compare(password, user.password);
 
     if (!passwordIsValid) {
       return res.status(400).json({ error: "Invalid password." });
@@ -67,7 +68,7 @@ export async function signInUser(req: Request, res: Response) {
     const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "3h" });
 
     // Set the JWT as a cookie
-    res.cookie("jwt", token, { httpOnly: true });
+    res.cookie("jwt", token, { httpOnly: true, secure: true });
 
     res.json({ token, email: user.email });
   } catch (error) {
