@@ -23,11 +23,23 @@ export async function getPostById(req: Request, res: Response) {
       },
       include: { author: true },
     });
+
+    if (!post) {
+      // In case the post does not exist
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    if (!post.published && req.userId !== post.authorId) {
+      // In case the post is not published and the request user is not the author
+      return res.status(403).json({ error: "Access denied" });
+    }
+
     res.json(post);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
 }
+
 // export async function getDrafts(req: Request, res: Response) {
 //   try {
 //     const posts = await prisma.post.findMany({

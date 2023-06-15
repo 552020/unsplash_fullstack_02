@@ -90,6 +90,7 @@ export async function verifyEmail(req: Request, res: Response) {
   const { token } = req.query;
 
   if (!token) {
+    console.log("verifyEmail:");
     return res.status(403).json({ error: "No token provided." });
   }
 
