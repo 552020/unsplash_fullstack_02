@@ -17,6 +17,16 @@ export const prisma = new PrismaClient();
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+// Middleware function to log incoming requests
+app.use((req, res, next) => {
+  console.log(
+    `Incoming request: \nmethod: ${req.method}, \nurl: ${req.url}, \nbody: ${JSON.stringify(req.body)},  \nheaders:
+     ${JSON.stringify(req.headers)})}`
+  );
+  next(); // Call next() to pass the request to the next middleware or route handler
+});
+
 app.use("/posts", postRoutes);
 app.use("/users", userRoutes);
 
