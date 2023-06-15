@@ -34,6 +34,16 @@ Next.js, Express, Prisma App starting from this template: https://github.com/pri
   - Railway
   -
 
+## Notes
+
+//
+// Type assertion is being used in this case to assert that the decoded object has a certain shape, specifically that it has an id property which is a number. This is because JWT decoding in JavaScript is a bit loose and does not provide strict typing. It's not 100% safe because we're basically telling TypeScript "trust me, I know what I'm doing". If the decoded token does not actually have an id property that is a number, it could lead to unexpected behavior. To mitigate this risk, you could add a runtime check to ensure that decoded.id is indeed a number before assigning it to req.userId.
+
+// Note regarding bcrypt.hashSync:
+// The use of the bcrypt library for password hashing is generally recommended. However, consider using an async version of bcrypt.hash instead of bcrypt.hashSync to avoid blocking the event loop. For example, you can use bcrypt.hash with await or wrap it in a Promise to make it asynchronous.
+
+// In the verifyToken function, consider adding a runtime check to ensure that decoded.id is indeed a number before assigning it to req.userId. This can help prevent unexpected behavior if the decoded token doesn't have the expected structure.
+
 ## Fullstack Example with Next.js (REST API)
 
 This example shows how to implement a **fullstack app in TypeScript with [Next.js](https://nextjs.org/)** using [React](https://reactjs.org/) (frontend), [Express](https://expressjs.com/) and [Prisma Client](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client) (backend). The example uses an SQLite database file with some initial dummy data which you can find at [`./backend/prisma/dev.db`](./backend/prisma/dev.db).
