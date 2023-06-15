@@ -27,6 +27,7 @@ async function destroy(id: number): Promise<void> {
 }
 
 const Post: React.FC<PostProps> = (props) => {
+  console.log(props);
   let title = props.title;
   if (!props.published) {
     title = `${title} (Draft)`;
@@ -73,9 +74,13 @@ const Post: React.FC<PostProps> = (props) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/${context.params.id}`);
+  console.log("content params.id");
+  console.log(context.params.id);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts/${context.params.id}`);
 
   const data = await res.json();
+  console.log("data");
+  console.log(data);
   return { props: { ...data } };
 };
 

@@ -13,16 +13,16 @@ export async function signUpUser(req: Request, res: Response) {
         name,
         email,
         password: hashedPassword,
-        verifiedEmail: false, // default value
+        verifiedEmail: false,
       },
     });
     const token = jwt.sign({ id: user.id }, JWT_SECRET);
     const verificationLink = `${process.env.NEXT_PUBLIC_API_URL}/verify-email?token=${token}`;
     const mailOptions = {
-      from: EMAIL_ADDRESS, // sender address
-      to: email, // list of receivers
-      subject: "Email Verification", // Subject line
-      text: `Hello, please use the following link to verify your email address: ${verificationLink}`, // plain text body
+      from: EMAIL_ADDRESS,
+      to: email,
+      subject: "Email Verification",
+      text: `Hello, please use the following link to verify your email address: ${verificationLink}`,
       html: `<b>Hello,</b><br>please use the following link to verify your email address: <a href="${verificationLink}">${verificationLink}</a>`, // html body
     };
 
@@ -64,7 +64,6 @@ export async function signInUser(req: Request, res: Response) {
     //   }
     const token = jwt.sign({ id: user.id }, JWT_SECRET);
 
-    //   res.json({ token });
     res.json({ token, email: user.email });
   } catch (error) {
     res.status(400).json({ error: "Error signing in user." });
@@ -72,9 +71,9 @@ export async function signInUser(req: Request, res: Response) {
 }
 
 const transporter = nodemailer.createTransport({
-  host: "posteo.de", // Posteo SMTP server
+  host: "posteo.de",
   port: 587,
-  secure: false, // upgrade later with STARTTLS
+  secure: false, // TODO: upgrade later with STARTTLS
   auth: {
     user: EMAIL_ADDRESS,
     pass: EMAIL_PASSWORD,
