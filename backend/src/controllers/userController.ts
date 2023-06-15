@@ -39,7 +39,7 @@ export async function signUpUser(req: Request, res: Response) {
 
     res.json({ token, email: user.email });
   } catch (error) {
-    res.status(400).json({ error: "Error signing up user." });
+    res.status(400).json({ error: (error as Error).message });
   }
 }
 
@@ -72,7 +72,7 @@ export async function signInUser(req: Request, res: Response) {
 
     res.json({ token, email: user.email });
   } catch (error) {
-    res.status(400).json({ error: "Error signing in user." });
+    res.status(400).json({ error: (error as Error).message });
   }
 }
 
