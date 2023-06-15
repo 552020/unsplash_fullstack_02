@@ -15,9 +15,9 @@ import verifyToken from "../middlewares/verifyToken";
 const router = express.Router();
 
 router.get("/feed", getPosts);
-router.get("/:id", getPostById);
 router.get("/drafts", verifyToken, getDrafts);
 router.get("/filterPosts", getFilteredPosts);
+router.get("/:id", verifyToken, getPostById);
 router.post("/", verifyToken, createPost);
 router.put("/publish/:id", verifyToken, publishPost);
 router.put("/unpublish/:id", verifyToken, unpublishPost);
