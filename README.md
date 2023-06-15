@@ -36,11 +36,15 @@ Next.js, Express, Prisma App starting from this template: https://github.com/pri
 
 ## Notes
 
-//
+### How not to store the JWT token in the local storage
+
+If you decide not to store JWTs in local storage due to the risk of XSS attacks, and you also decide against using HttpOnly cookies (for example, because you want to be able to read the token on the client side), then an in-memory strategy can be used as a more secure alternative. This strategy involves storing the token in a variable in your application's memory. However, this means the token will be lost if the user refreshes the page or closes the tab or browser, so you'll need to have a strategy to handle that, such as prompting the user to log in again. Keep in mind that no strategy is 100% secure, and each has its own trade-offs.
+
+### Type assertion
+
 // Type assertion is being used in this case to assert that the decoded object has a certain shape, specifically that it has an id property which is a number. This is because JWT decoding in JavaScript is a bit loose and does not provide strict typing. It's not 100% safe because we're basically telling TypeScript "trust me, I know what I'm doing". If the decoded token does not actually have an id property that is a number, it could lead to unexpected behavior. To mitigate this risk, you could add a runtime check to ensure that decoded.id is indeed a number before assigning it to req.userId.
 
-// Note regarding bcrypt.hashSync:
-// The use of the bcrypt library for password hashing is generally recommended. However, consider using an async version of bcrypt.hash instead of bcrypt.hashSync to avoid blocking the event loop. For example, you can use bcrypt.hash with await or wrap it in a Promise to make it asynchronous.
+### Runtime check in verifyToken
 
 // In the verifyToken function, consider adding a runtime check to ensure that decoded.id is indeed a number before assigning it to req.userId. This can help prevent unexpected behavior if the decoded token doesn't have the expected structure.
 
