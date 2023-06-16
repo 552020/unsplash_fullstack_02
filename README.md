@@ -1,8 +1,27 @@
 # unsplash_fullstack_02
 
-Next.js, Express, Prisma App starting from this template: https://github.com/prisma/prisma-examples/tree/latest/typescript/rest-nextjs-express
+Just another fullstack blog. Featurig Next.js, Node.js/Express, Prisma, PostgreSQL starting from this template: https://github.com/prisma/prisma-examples/tree/latest/typescript/rest-nextjs-express
 
-## Useful links & stuff
+## Technologies and Services
+
+- Nodejs
+- Express
+- JavaScript
+- Typescript
+- React
+- Next.js
+- Tailwind
+- Prisma
+- PostgreSQL
+- Git
+- GitHub
+- Vercel
+- Digital Ocean
+- Railway
+
+## Useful links, notes & stuff
+
+### Deploying a backend on the fly after Heroku
 
 - Where to deploy the nodejs/express backend. Some suggestions by Theo: https://www.youtube.com/watch?v=prjMJtXCR-g&ab_channel=Theo-t3%E2%80%A4gg
 
@@ -12,33 +31,29 @@ Next.js, Express, Prisma App starting from this template: https://github.com/pri
 | Website Host  | Vercel, Netlify, Github Pages |       Render.com, Cloudflare       | AWS/GCP |
 | Database Host |            Railway            | Planetscale, Supabase, CockroachDB | AWS/GCP |
 
-- How and where to host a MySQL database online:
-  https://www.prisma.io/dataguide/mysql/5-ways-to-host-mysql
-- JWT secret key generation https://stackoverflow.com/questions/31309759/what-is-secret-key-for-jwt-based-authentication-and-how-to-generate-it
-- How to add Tailwind to a Nextjs project. Besides follwoing the instructions on the Tailwind website, create a global.css file at the root of your project and add `impoert '../styles/global.css` to the \_app.tsx file and create one it this doens't exits
+I took Digital Ocean. Not listed here, but I used Railway to host the PostgreSQL database.
 
-- Technologies:
-  - Nodejs
-  - Express
-  - JavaScript
-  - Typescript
-  - React
-  - Next.js
-  - Tailwind
-  - Prisma
-  - PostgreSQL
-  - Git
-  - GitHub
-  - Vercel
-  - Digital Ocean
-  - Railway
-  -
+### Where to host a database online
+
+https://www.prisma.io/dataguide/mysql/5-ways-to-host-mysql
+
+### Authentication
+
+- JWT secret key generation https://stackoverflow.com/questions/31309759/what-is-secret-key-for-jwt-based-authentication-and-how-to-generate-it
+
+### Styling
+
+- How to add Tailwind to a Nextjs project. Besides follwoing the instructions on the Tailwind website, create a global.css file at the root of your project and add `impoert '../styles/global.css` to the \_app.tsx file and create one it this doens't exits
 
 ## Notes
 
 ### How not to store the JWT token in the local storage
 
 If you decide not to store JWTs in local storage due to the risk of XSS attacks, and you also decide against using HttpOnly cookies (for example, because you want to be able to read the token on the client side), then an in-memory strategy can be used as a more secure alternative. This strategy involves storing the token in a variable in your application's memory. However, this means the token will be lost if the user refreshes the page or closes the tab or browser, so you'll need to have a strategy to handle that, such as prompting the user to log in again. Keep in mind that no strategy is 100% secure, and each has its own trade-offs.
+
+### How to savely store a password
+
+https://codahale.com/how-to-safely-store-a-password/
 
 ### Type assertion
 
@@ -47,6 +62,8 @@ If you decide not to store JWTs in local storage due to the risk of XSS attacks,
 ### Runtime check in verifyToken
 
 // In the verifyToken function, consider adding a runtime check to ensure that decoded.id is indeed a number before assigning it to req.userId. This can help prevent unexpected behavior if the decoded token doesn't have the expected structure.
+
+> From here start the offiicial documentation of the template:
 
 ## Fullstack Example with Next.js (REST API)
 
